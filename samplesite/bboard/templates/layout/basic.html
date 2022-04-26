@@ -15,7 +15,7 @@
         <div><a href="{% url 'index' %}">Главная</a></div>
         <div><a href="{% url 'add' %}">Добавить</a></div>
         {% for rubric in rubrics %}
-        <div><a href="{% url 'by_rubric' rubric.pk %}">{{ rubric.name }}</a></div>
+        <a href="{% url 'by_rubric' rubric.pk %}">{{ rubric.name }}</a>
         {% endfor %}
     </div>
 </nav>
