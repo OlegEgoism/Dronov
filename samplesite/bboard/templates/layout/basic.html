@@ -1,0 +1,30 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'bboard/style.css' %}">
+</head>
+<body>
+<header>
+    <h1>Объявления</h1>
+</header>
+<nav>
+    <div>
+        <div><a href="{% url 'index' %}">Главная</a></div>
+        <div><a href="{% url 'add' %}">Добавить</a></div>
+        {% for rubric in rubrics %}
+        <div><a href="{% url 'by_rubric' rubric.pk %}">{{ rubric.name }}</a></div>
+        {% endfor %}
+    </div>
+</nav>
+<section>
+    <div>
+        {% block content %}
+        Главная
+        {% endblock %}
+    </div>
+</section>
+</body>
+</html>
