@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 def min_length():
-    min_length = 3
+    min_length = 1
     return min_length
 
 
@@ -37,7 +37,7 @@ class Bb(models.Model):
                              validators=[validators.MinLengthValidator(min_length)],
                              error_messages={'min_length': 'Неправильно, должно быть миинимум 1 символ'})
     content = models.TextField(verbose_name='Описание', null=True, blank=True)
-    price = models.DecimalField(verbose_name='Цена', max_digits=6, decimal_places=2, null=True, blank=True,
+    price = models.DecimalField(verbose_name='Цена', max_digits=10, decimal_places=2, null=True, blank=True,
                                 validators=[validate_even])
     published = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, db_index=True)
 
@@ -65,6 +65,7 @@ class Bb(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
 
 class Rubric(models.Model):
     name = models.CharField(verbose_name='Название', max_length=20, db_index=True)

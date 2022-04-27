@@ -6,4 +6,4 @@ from .models import Bb
 class BbForm(ModelForm):
     class Meta:
         model = Bb
-        fields = 'rubric', 'title', 'content', 'price'
+        fields = 'rubric', 'kind', 'title', 'content', 'price'
