@@ -1,0 +1,12 @@
+{% extends "layout/basic.html" %}
+
+{% block title %} {{ bb.title }} {% endblock %}
+
+{% block content %}
+<h3><a href="{% url 'by_rubric' bb.rubric.pk %}">{{ bb.rubric.name }}</a></h3>
+<h2>{{ bb.title }}</h2>
+<p>Описание: {{ bb.content }}</p>
+<p>Цена: {{ bb.price }} руб.</p>
+<a href="{% url 'edit' bb.pk %}">Иcправить объявление</a><br>
+<a href="{% url 'delete' bb.pk %}">Удалить объявление</a><br>
+{% endblock %}

@@ -3,9 +3,30 @@
 
 {% block content %}
 <h2>Добавить объявление</h2>
-<form action="{% url 'add_save' %}" method="POST">
+<form action="{% url 'add' %}" method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button>Отправить</button>
+    {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+    {% endfor %}
+    {% if form.non_field_errors %}
+    <ul>
+        {% for error in form.non_field_errors %}
+        <li><em>{{ error|escape }}</em></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% for field in form.visible_fields %}
+    {% if field.errors %}
+    <ul>
+        {% for error in field.errors %}
+        <li><em>{{ error|escape }}</em></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <p>{{ field.label_tag }}<br>{{ field }}<br>
+        {{ fiels.halp_text }}</p>
+    {% endfor %}
+    <button type="reset">Сброс</button>
+    <button type="submit">Отправить</button>
 </form>
 {% endblock %}

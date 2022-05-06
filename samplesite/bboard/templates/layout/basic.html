@@ -10,19 +10,19 @@
 <header>
     <h1>Объявления</h1>
 </header>
-<nav>
+
+<h2>
     <div>
-        <div><a href="{% url 'index' %}">Главная</a></div>
-        <div><a href="{% url 'add' %}">Добавить</a></div>
-        {% for rubric in rubrics %}
-        <a href="{% url 'by_rubric' rubric.pk %}">{{ rubric.name }}</a>
-        {% endfor %}
-    </div>
-</nav>
+        <div><a href="{% url 'index' %}">Главная</a>
+            <div><a href="{% url 'add' %}">Добавить</a></div>
+            {% for i in rubric %}
+            <a href="{% url 'by_rubric' i.pk %}">{{ i.name }}</a>
+            {% endfor %}
+        </div>
+</h2>
 <section>
     <div>
         {% block content %}
-        Главная
         {% endblock %}
     </div>
 </section>

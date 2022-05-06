@@ -2,11 +2,38 @@
 
 {% block content %}
 {% for bb in bbs %}
+
+
 <div>
-    <h2>{{ bb.title_and_price }}</h2>
+    <h2>{{ forloop.counter}}.<a href="{% url 'detail' pk=bb.pk %}"> {{ bb.title }}</a></h2>
+    <h3><a href="{% url 'by_rubric' bb.rubric.pk %}">{{ bb.rubric.name }}</a></h3>
     <p>{{ bb.content }}</p>
-    <p><a href="{% url 'by_rubric' bb.rubric.pk %}">{{ bb.rubric.name }}</a></p>
-    <p>{{ bb.published|date:"d.m.Y H:i:s" }}</p>
+    <p>{{ bb.published|date:"d.m H:i" }}</p>
+    <p>
+        {% for d in date_list %}
+        {{ d.year }}
+        {% endfor %}
+    </p>
 </div>
 {% endfor %}
+______
+<div>
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}">&lt;</a>
+<!--    &nbsp;&nbsp;|&nbsp;&nbsp;-->
+    {% endif %}
+    {{ page.number }} из {{ page.paginator.num_pages }}
+    {% if page.has_next %}
+<!--    &nbsp;&nbsp;|&nbsp;&nbsp;-->
+    <a href="?page={{ page.next_page_number }}">&gt;</a>
+    {% endif %}
+</div>
 {% endblock %}
+
+
+
+
+
+
+
+

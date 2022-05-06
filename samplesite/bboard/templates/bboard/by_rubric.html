@@ -2,13 +2,15 @@
 {% block title %}{{ current_rubric.name }}{% endblock %}
 
 {% block content %}
-<h2>Рубрика: {{ current_rubric.name }}</h2>
+<h2> {{ current_rubric.name|upper }}</h2>
+
+
 {% for bb in bbs %}
 <div>
-    <h2>{{ bb.title }}</h2>
-    <p>{{ bb.content }}</p>
+    <h2><a href="{% url 'detail' pk=bb.pk %}"> {{ bb.title }}</a></h2>
+    <p>Описание: {{ bb.content }}</p>
     <p>Цена: {{ bb.price }} руб.</p>
-    <p>{{ bb.published|date:'d.m.Y H:i:s' }}</p>
+    <p>{{ bb.published|date:'d.m.y H:i:s' }}</p>
 </div>
 {% endfor %}
 {% endblock %}

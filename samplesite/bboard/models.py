@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 def min_length():
-    min_length = 1
+    min_length = 0
     return min_length
 
 
@@ -50,6 +50,7 @@ class Bb(models.Model):
         return self.title
 
     def title_and_price(self):
+        """Соединят строки title и price"""
         if self.price:
             return '%s (цена: %.f р.)' % (self.title, self.price)
         else:
