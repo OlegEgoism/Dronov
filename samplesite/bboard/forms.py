@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ModelForm, DecimalField
 from django.forms.widgets import Select
 
@@ -33,3 +34,8 @@ class BbForm(forms.ModelForm):
         model = Bb
         fields = 'title', 'content', 'price', 'rubric', 'kind'
         labels = {'title': 'Название товара'}
+
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(label='Логин', widget=forms.TextInput)
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)

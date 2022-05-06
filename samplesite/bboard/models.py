@@ -32,7 +32,7 @@ class Bb(models.Model):
         ('c', 'Обменяю'),
     }
     kind = models.CharField(verbose_name='Позиции', max_length=1, choices=KINDS, blank=True)
-    rubric = models.ForeignKey('Rubric', verbose_name='Рубрика', on_delete=models.PROTECT, null=True, related_name='+')
+    rubric = models.ForeignKey('Rubric', verbose_name='Рубрика', on_delete=models.CASCADE, null=True, related_name='+')
     title = models.CharField(verbose_name='Товар', max_length=50,
                              validators=[validators.MinLengthValidator(min_length)],
                              error_messages={'min_length': 'Неправильно, должно быть миинимум 1 символ'})

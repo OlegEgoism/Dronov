@@ -1,13 +1,15 @@
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.paginator import Paginator
+from django.forms import modelformset_factory, inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
 from django.views.generic.dates import ArchiveIndexView, YearMixin, MonthArchiveView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView, DeleteView
+from django.views.generic.edit import UpdateView, DeleteView, FormView
 
-from .forms import BbForm
+from .forms import BbForm, UserLoginForm
 from .models import Bb, Rubric
 
 
@@ -38,6 +40,41 @@ def by_rubric(request, rubric_id):
         'current_rubric': current_rubric
     }
     return render(request, template_name='bboard/by_rubric.html', context=context)
+
+
+def rubrics(request):
+    """
+    Редактор рубрик в форме
+    """
+    RubricFormSet = modelformset_factory(Rubric, fields=('name',), can_delete=True)
+    if request.method == 'POST':
+        formset = RubricFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect('index')
+    else:
+        formset = RubricFormSet()
+    context = {
+        'formset': formset
+    }
+    return render(request, 'bboard/rubrics.html', context)
+
+
+def bbs(request, rubric_id):
+    """
+    Обработка встроенных набров форм
+    """
+    BbsFormSet = inlineformset_factory(Rubric, Bb, form=BbForm, extra=1)
+    rubric = Rubric.objects.get(pk=rubric_id)
+    if request.method == 'POST':
+        formset = BbsFormSet(request.POST, instance=rubric)
+        if formset.is_valid():
+            formset.save()
+            return redirect('index')
+    else:
+        formset = BbsFormSet(instance=rubric)
+    context = {'formset': formset, 'current_rubric': rubric}
+    return render(request, 'bboard/bbs.html', context)
 
 
 class BbDetailView(DetailView):
@@ -205,6 +242,52 @@ class BbIndexView(ArchiveIndexView):
 
 
 class BbMonthArchiveView(MonthArchiveView):
+    """
+    Дата в html
+    """
     model = Bb
     date_field = 'published'
     month_format = '%m'
+
+
+# def get_login(request):
+#     """
+#     Вход на сайт
+#     """
+#     if request.method == 'POST':
+#         form = UserLoginForm(data=request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             return redirect('index')
+#     else:
+#         form = UserLoginForm
+#     context = {
+#         'form': form
+#     }
+#     return render(request, 'registration/login.html', context=context)
+#
+# def get_logout(request):
+#     """
+#     Выход с сайта
+#     """
+#     logout(request)
+#     return redirect('login')
+
+
+class Login(LoginView):
+    """
+    Вход на сайт
+    """
+    authentication_form = UserLoginForm
+    template_name = 'registration/login.html'
+    next = 'registration/login.html'
+
+
+class Logout(LogoutView):
+    """
+    Выход с сайта
+    """
+    template_name = 'registration/logout.html'
+
+
