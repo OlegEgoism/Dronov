@@ -1,4 +1,6 @@
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory, inlineformset_factory
 from django.http import HttpResponseRedirect
@@ -14,6 +16,9 @@ from .models import Bb, Rubric
 
 
 def index(request):
+    """
+    Главная страница
+    """
     bbs = Bb.objects.all()
     rubric = Rubric.objects.all()
     paginator = Paginator(bbs, 4)
@@ -291,3 +296,9 @@ class Logout(LogoutView):
     template_name = 'registration/logout.html'
 
 
+class SLPasswordResetView(PasswordResetView, SuccessMessageMixin, LoginRequiredMixin):
+    template_name = 'registration/password_reset.html'
+    subject_template_name = 'registration/reset_subject.txt'
+    email_template_name = 'registration/reset_email.txt'
+    success_url = reverse_lazy('password_reset_done')
+    success_message = 'Пароль пользователя сброшен'

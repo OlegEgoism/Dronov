@@ -1,9 +1,10 @@
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
+    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import path, reverse_lazy
 from django.views.generic.edit import FormView
 
 from .views import BbCreateView, BbDetailView, by_rubric, add_and_save, BbEditView, BbIndexView, \
-    BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout
+    BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout, SLPasswordResetView
 
 urlpatterns = [
     path('', index, name='index'),
@@ -26,17 +27,37 @@ urlpatterns = [
 
     # path('login/', get_login, name='login'),
     # path('logout/', get_logout, name='logout'),
+    # вход/выход на сайт (ГЛАВА 15)
     path('accounts/login', Login.as_view(), name='login'),
     path('accounts/logout', Logout.as_view(), name='logout'),
-    # смена пароля (глава 15 стр. 303)
-    path('accounts/change_password/', PasswordChangeView.as_view(template_name='registration/change_password.html',
-                                                                 success_url=reverse_lazy('bboard:password_change_done')),
-                                                                 name='password_change'),
-    # уведомление об успешном изменении пароля (глава 15 стр. 303)
-    path('accounts/change_password/done/', PasswordChangeDoneView.as_view(template_name='registration/password_changed.html'),
-                                                                          name='password_change_done'),
+    # смена пароля
+    path('accounts/password_change/', PasswordChangeView.as_view(
+        template_name='registration/change_password.html'),
+         name='password_change'),
+    # уведомление об успешном изменении пароля
+    path('accounts/ch_pass/done/', PasswordChangeDoneView.as_view(
+        template_name='registration/password_changed.html'),
+         name='password_change_done'),
+    # отправка письма для сброса пароля
+    # path('accounts/password_reset/', PasswordResetView.as_view(
+    #     template_name='registration/password_reset.html',
+    #     subject_template_name='registration/reset_subject.txt',
+    #     email_template_name='registration/reset_email.txt'),
+    #      name='password_reset'),
+    path('accounts/password_reset/', SLPasswordResetView.as_view(), name='password_reset'),
 
-
+    # уведомление об отправки письма для сброса пароля
+    path('accounts/password_reset/done/', PasswordResetDoneView.as_view(
+        template_name='registration/email_sent.html'),
+         name='password_reset_done'),
+    # сброс пароля
+    path('accounts/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+        template_name='registration/confirm_password.html'),
+         name='password_reset_confirm'),
+    # уведомление об успешном сбросе
+    path('accounts/reset/done/', PasswordResetCompleteView.as_view(
+        template_name='registration/password_confirmed.html'),
+         name='password_reset_complete'),
 
     # path('add', add_and_save, name='add'),
     # path('add/', FormView.as_view(), name='add'),
