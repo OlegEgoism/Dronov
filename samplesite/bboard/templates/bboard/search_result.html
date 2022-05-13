@@ -1,0 +1,15 @@
+{% extends "layout/basic.html" %}
+
+{% block title %}{{ bbs.title }}{% endblock %}
+
+{% block content %}
+<ul>
+    {% for bb in bbs %}
+    <div>
+        <h4><a href="{% url 'detail' pk=bb.pk %}">{{ bb.title }}</a></h4>
+        <p></p>
+        <h4>{{ bb.content|truncatechars:100 }}</h4>
+    </div>
+    {% endfor %}
+</ul>
+{% endblock %}

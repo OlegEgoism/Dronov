@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'bboard'
+    'bboard',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,7 @@ EMAIL_HOST_USER = 'vp3231963@gmail.com'
 EMAIL_HOST_PASSWORD = 'dinamo258'
 EMAIL_PORT = 587
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# CAPTCHA_LENGTH = 2
+
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'

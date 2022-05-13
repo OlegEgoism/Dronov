@@ -1,3 +1,4 @@
+from captcha.fields import CaptchaField
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ModelForm, DecimalField
@@ -29,6 +30,7 @@ class BbForm(forms.ModelForm):
     rubric = forms.ModelChoiceField(label='Рубрика', queryset=Rubric.objects.all(), help_text='Не забудьте выбрать',
                                     widget=forms.widgets.Select(attrs={'size': 0}))
     kind = forms.Select()
+    captcha = CaptchaField(label='Введите текст', error_messages={'invalid': 'Не верно'})
 
     class Meta:
         model = Bb
@@ -39,3 +41,10 @@ class BbForm(forms.ModelForm):
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput)
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+
+
+class SearchForm(forms.Form):
+    keyword = forms.CharField(label='Искомое слово', max_length=20)
+    # rubric = forms.ModelChoiceField(label='Рубрика', queryset=Rubric.objects.all())
+    error_css_class = 'error'
+    required_css_class = 'required'

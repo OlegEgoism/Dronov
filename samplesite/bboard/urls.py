@@ -4,7 +4,8 @@ from django.urls import path, reverse_lazy
 from django.views.generic.edit import FormView
 
 from .views import BbCreateView, BbDetailView, by_rubric, add_and_save, BbEditView, BbIndexView, \
-    BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout, SLPasswordResetView
+    BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout, SLPasswordResetView, search, \
+    formset_processing
 
 urlpatterns = [
     path('', index, name='index'),
@@ -59,6 +60,8 @@ urlpatterns = [
         template_name='registration/password_confirmed.html'),
          name='password_reset_complete'),
 
+    path('search/', search, name='search'),
+    path('formset_processing/', formset_processing, name='formset_processing'),
     # path('add', add_and_save, name='add'),
     # path('add/', FormView.as_view(), name='add'),
 

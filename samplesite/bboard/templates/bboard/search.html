@@ -1,0 +1,12 @@
+﻿{% extends "layout/basic.html" %}
+
+{% block title %}{{ bbs.title }}{% endblock %}
+
+{% block content %}
+<h1 class="display-1 text-center">Поиск</h1>
+<form method="POST" action="{% url 'search' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Найти данные</button>
+</form>
+{% endblock %}

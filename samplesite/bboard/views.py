@@ -2,8 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-from django.forms import modelformset_factory, inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.forms import modelformset_factory, inlineformset_factory, formset_factory
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
@@ -11,7 +11,7 @@ from django.views.generic.dates import ArchiveIndexView, YearMixin, MonthArchive
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, FormView
 
-from .forms import BbForm, UserLoginForm
+from .forms import BbForm, UserLoginForm, SearchForm
 from .models import Bb, Rubric
 
 
@@ -302,3 +302,36 @@ class SLPasswordResetView(PasswordResetView, SuccessMessageMixin, LoginRequiredM
     email_template_name = 'registration/reset_email.txt'
     success_url = reverse_lazy('password_reset_done')
     success_message = 'Пароль пользователя сброшен'
+
+
+def search(request):
+    if request.method == 'POST':
+        sf = SearchForm(request.POST)
+        if sf.is_valid():
+            keyword = sf.cleaned_data['keyword']
+            # rubric_id = sf.cleaned_data['rubric'].pk
+            bbs = Bb.objects.filter(title__icontains=keyword)
+            context = {'bbs': bbs}
+            return render(request, 'bboard/search_result.html', context=context)  # Куда перейдем после поиска
+    else:
+        sf = SearchForm()
+    context = {'form': sf}
+    return render(request, 'bboard/search.html', context=context)  # Форма поиска
+
+
+def formset_processing(request):
+    FS = formset_factory(SearchForm, extra=3, can_order=True, can_delete=True)
+    if request.method == 'POST':
+        formset = FS(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data and not form.cleaned_data['DELETE']:
+                    keyword = form.cleaned_data['keyword']
+                    # rubric_id = form.cleaned_data['ORDER']
+                    bbs = Bb.objects.filter(title__icontains=keyword)
+                    context = {'bbs': bbs}
+                    return render(request, 'bboard/process_result.html', context=context)
+    else:
+        formset = FS()
+    context = {'formset': formset}
+    return render(request, 'bboard/formset.html', context=context)
