@@ -1,9 +1,11 @@
+import os
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory, inlineformset_factory, formset_factory
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
@@ -11,8 +13,8 @@ from django.views.generic.dates import ArchiveIndexView, YearMixin, MonthArchive
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, FormView
 
-from .forms import BbForm, UserLoginForm, SearchForm
-from .models import Bb, Rubric
+from .forms import BbForm, UserLoginForm, SearchForm, ImgForm
+from .models import Bb, Rubric, Img
 
 
 def index(request):
@@ -305,6 +307,7 @@ class SLPasswordResetView(PasswordResetView, SuccessMessageMixin, LoginRequiredM
 
 
 def search(request):
+    """Поиск"""
     if request.method == 'POST':
         sf = SearchForm(request.POST)
         if sf.is_valid():
@@ -335,3 +338,32 @@ def formset_processing(request):
         formset = FS()
     context = {'formset': formset}
     return render(request, 'bboard/formset.html', context=context)
+
+
+def imgadd(request):
+    """Добавление фото через форму"""
+    if request.method == 'POST':
+        form = ImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            for file in request.FILES.getlist('img'):
+                img = Img()
+                img.desc = form.cleaned_data['desc']
+                img.img = file
+                img.save()
+            return redirect('index')
+    else:
+        form = ImgForm()
+        context = {'form': form}
+    return render(request, 'bboard/imgadd.html', context=context)
+
+
+def delete_img(request, pk):
+    """
+    Удаление записи и отдельно удаляется картинка.
+    """
+    img = Img.objects.get(pk=pk)
+    img.img.delete()
+    img.delete()
+    return redirect('index')
+
+

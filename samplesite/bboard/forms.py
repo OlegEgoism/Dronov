@@ -1,10 +1,12 @@
 from captcha.fields import CaptchaField
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django.core import validators
+from django.core.validators import FileExtensionValidator
 from django.forms import ModelForm, DecimalField
 from django.forms.widgets import Select
 
-from .models import Bb, Rubric
+from .models import Bb, Rubric, Img
 
 
 # class BbForm(ModelForm):
@@ -48,3 +50,16 @@ class SearchForm(forms.Form):
     # rubric = forms.ModelChoiceField(label='Рубрика', queryset=Rubric.objects.all())
     error_css_class = 'error'
     required_css_class = 'required'
+
+
+class ImgForm(forms.ModelForm):
+    img = forms.ImageField(label='Изображение',
+                           validators=[validators.FileExtensionValidator(allowed_extensions=('gif', 'jpg', 'png'))],
+                           error_messages={'invalid_extension': 'Этот формат файлов не поддерживается'},
+                           widget=forms.widgets.ClearableFileInput(attrs={'multiple': True}))  # Позволяет загружать сразу несколько файлов.
+    desc = forms.CharField(label='Описание', widget=forms.widgets.Textarea())
+
+
+    class Meta:
+        model = Img
+        fields = '__all__'

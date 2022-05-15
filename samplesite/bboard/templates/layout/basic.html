@@ -1,10 +1,14 @@
 {% load static %}
+{% load bootstrap4 %}
 
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
     <link rel="stylesheet" type="text/css" href="{% static 'bboard/style.css' %}">
+    {% bootstrap_css %}
+
+    {% bootstrap_javascript jquery='slim' %}
 </head>
 <body>
 <header>
@@ -12,7 +16,6 @@
 </header>
 <h2>
     <div>
-
         {% if request.user.is_authenticated %}
         <h4><font color="red">Добро пожаловать, {{ user.username }}</font></h4>
         <a href="{% url 'logout' %}"><font color="#0d6efd">Выход</font></a>
@@ -20,6 +23,7 @@
         <a href="{% url 'password_reset' %}">Сброс пароля</a>
         <a href="{% url 'search' %}">Поиск</a>
         <a href="{% url 'formset_processing' %}">Большой поиск</a>
+        <div><a href="{% url 'img' %}">Фото</a></div>
         <div><a href="{% url 'add' %}">Добавить объявление</a></div>
         <div><a href="{% url 'rubrics' %}">Редкатор рубрик</a></div>
         {% else %}
@@ -37,12 +41,15 @@
             <a href="{% url 'by_rubric' i.pk %}">{{ i.name }}</a>
             {% endfor %}
         </div>
+    </div>
+
 </h2>
 <section>
     <div>
         {% block content %}
         {% endblock %}
     </div>
+
 </section>
 </body>
 </html>

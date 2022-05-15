@@ -4,6 +4,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
+from precise_bbcode.fields import BBCodeTextField
 
 
 def min_length():
@@ -47,7 +48,8 @@ class Bb(models.Model):
     title = models.CharField(verbose_name='Товар', max_length=50,
                              validators=[validators.MinLengthValidator(min_length)],
                              error_messages={'min_length': 'Неправильно, должно быть миинимум 1 символ'})
-    content = models.TextField(verbose_name='Описание', null=True, blank=True)
+    content = BBCodeTextField(null=True, blank=True, verbose_name='Описание')
+    # content = models.TextField(verbose_name='Описание', null=True, blank=True)
     price = models.DecimalField(verbose_name='Цена', max_digits=10, decimal_places=2, null=True, blank=True,
                                 validators=[validate_even])
     published = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, db_index=True)
@@ -80,6 +82,19 @@ class Bb(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+
+class Img(models.Model):
+    img = models.ImageField(verbose_name='Изoбpaжeниe', upload_to='')
+    desc = models.TextField(verbose_name='Oпиcaниe')
+
+    def delete(self, *args, **kwargs):
+        self.img.delete(save=False)
+        super().delete(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изoбpaжeния'
 
 
 class RubricManager(models.Manager):

@@ -1,11 +1,10 @@
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import path, reverse_lazy
-from django.views.generic.edit import FormView
+from django.urls import path
 
-from .views import BbCreateView, BbDetailView, by_rubric, add_and_save, BbEditView, BbIndexView, \
+from .views import BbCreateView, BbDetailView, by_rubric, BbEditView, \
     BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout, SLPasswordResetView, search, \
-    formset_processing
+    formset_processing, imgadd
 
 urlpatterns = [
     path('', index, name='index'),
@@ -62,6 +61,11 @@ urlpatterns = [
 
     path('search/', search, name='search'),
     path('formset_processing/', formset_processing, name='formset_processing'),
+
+    path('img', imgadd, name='img'),
+
+
+
     # path('add', add_and_save, name='add'),
     # path('add/', FormView.as_view(), name='add'),
 
