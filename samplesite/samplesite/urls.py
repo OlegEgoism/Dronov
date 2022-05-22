@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('', include('bboard.urls')),
     path('captcha/', include('captcha.urls')),
+    path('social/', include('social_django.urls', namespace='social')),
 ]
 
 if settings.DEBUG:

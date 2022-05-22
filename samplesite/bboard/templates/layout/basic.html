@@ -29,7 +29,7 @@
         {% else %}
         <a href="{% url 'login' %}"><font color="#0d6efd">Вход</font></a>
         {% endif %}
-
+        <a href="{% url 'social:begin' 'vk-oauth2' %}">Войти через VK</a>
         <div><a href="{% url 'index' %}">Главная</a>
 
             <div>

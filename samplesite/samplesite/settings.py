@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'captcha',
     'precise_bbcode',
     'bootstrap4',
+    'django_cleanup.apps.CleanupConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -91,6 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 2}
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -98,6 +103,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'samplesite.validation.NoForbiddenCharsValidator',
+        'OPTIONS': {'forbidden_chars': '  '},
+    }
 ]
 
 # Internationalization
@@ -137,3 +146,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # CAPTCHA_LENGTH = 2
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = '8173906'  # ID приложения
+SOCIAL_AUTH_VK_OAUTH2_SECRET = '4oZF19gAL0rgmw43Nfas'  # Защищённый ключ
+# SOCIAL_AUTH_VК_OAUTH2_SCOPE = ['email']
+
+# LOGIN_REDIRECT_URL = 'https://www.onliner.by/'  #если залогинился куда перенаправит
