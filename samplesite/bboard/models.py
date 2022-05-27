@@ -4,6 +4,8 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import Signal
 from precise_bbcode.fields import BBCodeTextField
 
 
@@ -174,8 +176,8 @@ class Kit(models.Model):
         verbose_name_plural = 'Запчасть'
         verbose_name = 'Запчасти'
 
-    def __str__(self):
-        return self.mashines
+    # def __str__(self):
+    #     return self.mashines
 
 
 class Note(models.Model):
@@ -232,3 +234,21 @@ class RevRubric(Rubric):
         ordering = ['name']
 
 
+
+"""
+Объявление своих сигналов
+"""
+# add_bb = Signal(providing_args=['rubric'])
+# def add_bb_dispatcher(sender, **kwargs):
+#     print('Объявление в рубрике "%s" с ценой %.2f создано' % (kwargs['rubric'].name, kwargs['instance'].price))
+#
+#
+# add_bb.connect(add_bb_dispatcher)
+
+
+# def post_save_dispatcher(sender, **kwargs):
+#     if kwargs["created"]:
+#         print('Объявление "%s" создано' % kwargs["instance"].rubric.name)
+#
+#
+# post_save.connect(post_save_dispatcher, sender=Bb)

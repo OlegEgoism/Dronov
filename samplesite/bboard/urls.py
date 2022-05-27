@@ -1,10 +1,16 @@
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import BbCreateView, BbDetailView, by_rubric, BbEditView, \
     BbMonthArchiveView, index, delete, edit, rubrics, bbs, Login, Logout, SLPasswordResetView, search, \
-    formset_processing, imgadd
+    formset_processing, imgadd, get_email, api_rubrics, api_rubric_detail, APIRubrics, APIRubricDetail, APIRubricList, \
+    APIRubricViewSet, APIRubricViewSetRe
+
+router = DefaultRouter()
+router.register('rubset', APIRubricViewSet)
+router.register('rubsetre', APIRubricViewSetRe)
 
 urlpatterns = [
     path('', index, name='index'),
@@ -64,9 +70,16 @@ urlpatterns = [
 
     path('img', imgadd, name='img'),
 
+    path('mail/', get_email, name='mail'),
+
+    path('api/rubrics/', api_rubrics),
+    path('api/rubrics/<int:pk>', api_rubric_detail),
+    path('api/rubricss/', APIRubrics.as_view()),  # исправление рубрик
+    path('api/rubricss/<int:pk>', APIRubricDetail.as_view()),
+    path('api/rublist/', APIRubricList.as_view()),
+    path('', include(router.urls)),  # http://127.0.0.1:8000/rubset/   http://127.0.0.1:8000/rubsetre/
 
 
     # path('add', add_and_save, name='add'),
     # path('add/', FormView.as_view(), name='add'),
-
 ]

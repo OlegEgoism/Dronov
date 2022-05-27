@@ -63,3 +63,8 @@ class ImgForm(forms.ModelForm):
     class Meta:
         model = Img
         fields = '__all__'
+
+
+class EmailForm(forms.Form):
+    subject = forms.EmailField(label='Email', required=True, widget=forms.TextInput(attrs={'style': 'margin:10px; padding:10px; height:40px', 'class': 'form-control col-sm-8', 'placeholder': 'Напишите вашу почту'}))
+    content = forms.CharField(label='Текст письма', widget=forms.Textarea(attrs={'style': 'margin:10px; padding:10px; height:200px', 'class': 'form-control col-sm-8', 'placeholder': 'Напишите текст письма'}))

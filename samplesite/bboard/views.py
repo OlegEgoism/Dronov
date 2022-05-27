@@ -1,20 +1,30 @@
 import os
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory, inlineformset_factory, formset_factory
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
 from django.views.generic.dates import ArchiveIndexView, YearMixin, MonthArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, FormView
+from rest_framework import status, generics
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .forms import BbForm, UserLoginForm, SearchForm, ImgForm
+from .forms import BbForm, UserLoginForm, SearchForm, ImgForm, EmailForm
 from .models import Bb, Rubric, Img
+from .serializers import RubricSerializer
 
 
 def index(request):
@@ -65,6 +75,7 @@ def rubrics(request):
         'formset': formset
     }
     return render(request, 'bboard/rubrics.html', context)
+    # return {'rubric': Rubric.objects.all()}
 
 
 def bbs(request, rubric_id):
@@ -108,11 +119,12 @@ class BbDetailView(DetailView):
 #         return context
 
 
-class BbCreateView(CreateView):
+class BbCreateView(SuccessMessageMixin, CreateView):
     template_name = 'bboard/create.html'
     model = Bb
     form_class = BbForm
     success_url = '/detail/{id}'
+    success_message = 'Объявление о продаже товара "%(title)s" создано.'
 
     # success_url = reverse_lazy('index')
 
@@ -172,6 +184,8 @@ def edit(request, pk):
         bbf = BbForm(request.POST, instance=bb)
         if bbf.is_valid():
             bbf.save()
+            messages.add_message(request, messages.SUCCESS, 'Объявление исправлено', extra_tags='first second')
+            # first_message_text = messages[0].message
             return HttpResponseRedirect(reverse('by_rubric', kwargs={'rubric_id': bbf.cleaned_data['rubric'].pk}))
         else:
             context = {'form': bbf}
@@ -367,3 +381,112 @@ def delete_img(request, pk):
     return redirect('index')
 
 
+def get_email(request):
+    """
+    Отправка электронных писем
+    """
+    if request.method == 'POST':
+        emailform = EmailForm(request.POST)
+        if emailform.is_valid():
+            mail = send_mail(emailform.cleaned_data['subject'], emailform.cleaned_data['content'], '',
+                             recipient_list=('olegpustovalov220@gmail.com',), fail_silently=True)
+            if mail:
+                context = {
+                    'title': 'Обратная связь',
+                    'emailform': emailform
+                }
+                return render(request, 'bboard/mail.html', context=context)
+            else:
+                context = {
+                    'title': 'Письмо отправлено',
+                    'emailform': emailform
+                }
+                return render(request, 'bboard/mail.html', context=context)
+    else:
+        emailform = EmailForm()
+    context = {
+        'title': 'Ошибка отправки письма',
+        'emailform': emailform
+    }
+    return render(request, 'bboard/mail.html', context=context)
+
+
+@api_view(['GET', 'POST'])
+def api_rubrics(request):
+    """
+    Второй принцип REST: идент.ификация действия по НТТР-методу
+    """
+    if request.method == 'GET':
+        rubrics = Rubric.objects.all()
+        serializer = RubricSerializer(rubrics, many=True)
+        # return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = RubricSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+def api_rubric_detail(request, pk):
+    rubric = Rubric.objects.get(pk=pk)
+    if request.method == 'GET':
+        serializer = RubricSerializer(rubrics)
+        return Response(serializer.data)
+    elif request.method == 'PUT' or request.method == 'PATCH':
+        serializer = RubricSerializer(rubric, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        rubric.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class APIRubrics(APIView):
+    def get(self, request):
+        rubrics = Rubric.objects.all()
+        serializer = RubricSerializer(rubrics, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = RubricSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIRubric(generics.ListCreateAPIView):
+    """
+    Контроллер-класс низкого уровня
+    """
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
+
+
+class APIRubricDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
+
+
+class APIRubricList(generics.ListAPIView):
+    """Список рубрик"""
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
+
+
+class APIRubricViewSet(ModelViewSet):
+    """Метаконтроллеры (для добавления новой рубрики .../rubset/)"""
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class APIRubricViewSetRe(ReadOnlyModelViewSet):
+    """Пример метаконтроллера, реализующего только считывание данных"""
+    queryset = Rubric.objects.all()
+    serializer_class = RubricSerializer

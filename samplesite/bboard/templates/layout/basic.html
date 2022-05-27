@@ -29,7 +29,8 @@
         {% else %}
         <a href="{% url 'login' %}"><font color="#0d6efd">Вход</font></a>
         {% endif %}
-        <a href="{% url 'social:begin' 'vk-oauth2' %}">Войти через VK</a>
+        <a href="{% url 'social:begin' 'vk-oauth2' %}">---Войти через VK---</a>
+        <a href="{% url 'mail' %}">---Задать вопросы---</a>
         <div><a href="{% url 'index' %}">Главная</a>
 
             <div>
@@ -44,6 +45,16 @@
     </div>
 
 </h2>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li
+    {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <section>
     <div>
         {% block content %}

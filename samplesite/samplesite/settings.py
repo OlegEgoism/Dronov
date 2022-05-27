@@ -42,17 +42,29 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_cleanup.apps.CleanupConfig',
     'social_django',
+
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'bboard.middlewares.RubricsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
 
 ROOT_URLCONF = 'samplesite.urls'
 
@@ -69,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+                # 'bboard.middlewares.rubric',
             ],
         },
     },
@@ -146,7 +159,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # CAPTCHA_LENGTH = 2
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
-
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.vk.VKOAuth2',
